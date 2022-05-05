@@ -67,7 +67,6 @@ string TcpSocket::recvMsg() {
     // 1.接收数据头
     int len = 0;
     int ret = readn((char*)&len, 4);
-    // if (ret == 0)   return string();
     len = ntohl(len);
     cout << "the data size:" << len << endl;
     // 2.接收数据
