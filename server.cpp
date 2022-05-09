@@ -1,9 +1,11 @@
 #include "TcpServer.hpp"
 #include "TcpSocket.hpp"
 #include <pthread.h>
+#include <memory>
 struct SockInfo {
     TcpServer* srv;
-    TcpSocket* tcp;
+    // TcpSocket* tcp;
+    unique_ptr<TcpSocket> tcp;
     sockaddr_in addr;
 };
 
@@ -23,7 +25,7 @@ void* working(void* arg) {
         cout << s << endl;
     }
     cout << "end recv msg..." << endl;
-    delete info->tcp;
+    // delete info->tcp;
     delete info;
     return nullptr;
 }
@@ -38,8 +40,9 @@ int main() {
             cout << "connect failed, retry..." << endl;
             continue;
         }
+        unique_ptr<TcpSocket> c_ptr(c);
         
-        info->tcp = c;
+        info->tcp = move(c_ptr);
         info->srv = &srv;
         pthread_t pid;
         pthread_create(&pid, NULL, working, info);
