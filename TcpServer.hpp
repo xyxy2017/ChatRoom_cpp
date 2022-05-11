@@ -8,6 +8,9 @@ class TcpServer {
 public:
     TcpServer();
     ~TcpServer();
+    int get_fd() {
+        return m_fd;
+    }
     int set_listen(unsigned short port);
     TcpSocket* accept_conn(sockaddr_in* addr = nullptr);
 private:
