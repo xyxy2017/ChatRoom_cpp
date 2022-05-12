@@ -30,6 +30,9 @@ int TcpServer::set_listen(unsigned short port) {
     addrin.sin_port = htons(port);
     addrin.sin_addr.s_addr = INADDR_ANY;
 
+    int on = 1;
+    setsockopt(m_fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+
     int ret = bind(m_fd, (sockaddr*)&addrin, sizeof(addrin));
     ERROR_CHECK(ret,-1,"bind");
     cout << "socket bind success, ip: "
