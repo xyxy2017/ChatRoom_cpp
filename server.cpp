@@ -40,6 +40,11 @@ int main() {
     ev.data.fd = sfd;
     int ret = epoll_ctl(epfd, EPOLL_CTL_ADD, sfd, &ev);
     ERROR_CHECK(ret, -1, "epoll_ctl");
+    epoll_event ev_stdin;
+    ev_stdin.events = EPOLLIN;
+    ev.data.fd = STDIN_FILENO;
+    ret = epoll_ctl(epfd, EPOLL_CTL_ADD, STDIN_FILENO, &ev_stdin);
+
     epoll_event evs[1024];
     int size = sizeof(evs) / sizeof(epoll_event);
     while (1) {
@@ -47,7 +52,7 @@ int main() {
         for (int i = 0; i < num; ++i) {
             int cur_fd = evs[i].data.fd;
             if (cur_fd == sfd) {
-                SockInfo *info = new SockInfo;
+                SockInfo* info = new SockInfo;
                 TcpSocket* c = srv.accept_conn(&info->addr);
                 if (c == nullptr) {
                     cout << "connect failed, retry..." << endl;
@@ -59,6 +64,8 @@ int main() {
                 pthread_t pid;
                 pthread_create(&pid, NULL, working, info);
                 pthread_detach(pid);
+            } else if (cur_fd == STDIN_FILENO) {
+                
             }
         }
 

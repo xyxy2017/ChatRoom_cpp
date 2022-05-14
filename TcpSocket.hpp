@@ -104,8 +104,14 @@ int TcpSocket::readn(char* buf, int size) {
         if ((nread = read(m_fd, p, len)) > 0) {
             p += nread;
             len -= nread;
-        } else if (nread == -1 || nread == 0) {
+        } else if (nread == 0) {
             return -1;
+        } else {
+            if (errno == EAGAIN) {
+                break;
+            } else {
+                return -1;
+            }
         }
     }
     return size;
